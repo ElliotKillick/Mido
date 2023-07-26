@@ -19,7 +19,9 @@ All in one super simple & secure script. Comes with advanced features like downl
 #### ❌ https://www.microsoft.com/en-us/software-download/windows11<br />
 #### ✔️ Mido, the Microsoft Windows Downloader (using the **same** official Microsoft servers)
 
-[Project demo video](demo.mp4)
+<center>
+[Project demo video](demo.gif)
+</center>
 
 ## How does Mido work??
 
