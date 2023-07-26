@@ -20,7 +20,7 @@ All in one super simple & secure script. Comes with advanced features like downl
 #### ✔️ Mido, the Microsoft Windows Downloader (using the **same** official Microsoft servers)
 
 <p align="center">
-    <a href="demo.gif" alt="Project demo GIF"></a>
+    <img src="demo.gif" alt="Project demo GIF"></img>
 </p>
 
 ## How does Mido work??
