@@ -17,7 +17,7 @@ Mido makes downloading the latest release of Windows from **official** Microsoft
 All in one super simple & secure script. Comes with advanced features like download resumption, SHA-256 checksum verification, and downloading many different Windows versions in a single command. Did I mention it's written in *pure* POSIX sh (w/ few coreutils) + curl so it will run anywhere (even on Windows with WSL or MSYS2)? So robust, very minimalist!
 
 #### ❌ https://www.microsoft.com/en-us/software-download/windows11<br />
-#### ✅ Mido, the Microsoft Windows Downloader (using the **same** official Microsoft servers)
+#### ✔️ Mido, the Microsoft Windows Downloader (using the **same** official Microsoft servers)
 
 ## How does Mido work??
 
