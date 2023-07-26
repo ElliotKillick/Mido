@@ -41,6 +41,8 @@ Check out the `create-media.sh` script in [Qvm-Create-Windows-Qube](https://gith
 
 Mido is very secure. Every chance to reduce attack surface is taken. Untrusted data is treated as such with proper validation steps. The highest possible version of TLS is always used (up to TLS 1.3). Easily verify security properties yourself in the transparent shell script.
 
+No web browser (e.g headless browser running JavaScript) reduces the attack surface by many orders of magnitude.
+
 The next [Shellshock/Bashdoor](https://en.wikipedia.org/wiki/Shellshock_(software_bug))? POSIX sh compatible.
 - Plus, automatically switches to a more secure shell if available
 
