@@ -1,6 +1,6 @@
 <div align="center">
     <a href="https://github.com/ElliotKillick/Mido">
-        <img width="160" src="logo/logo.png" alt="Logo" />
+        <img width="160" src="logo.png" alt="Logo" />
     </a>
 </div>
 
@@ -19,9 +19,9 @@ All in one super simple & secure script. Comes with advanced features like downl
 #### ❌ https://www.microsoft.com/en-us/software-download/windows11<br />
 #### ✔️ Mido, the Microsoft Windows Downloader (using the **same** official Microsoft servers)
 
-<center>
-[Project demo video](demo.gif)
-</center>
+<p align="center">
+    <a href="demo.gif" alt="Project demo GIF"></a>
+</p>
 
 ## How does Mido work??
 
