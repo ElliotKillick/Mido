@@ -12,16 +12,18 @@
     The <b>Microsoft Windows Downloader</b> — designed to save you time
 </p>
 
-Mido makes downloading the latest release of Windows from **official** Microsoft servers a breeze so you can quickly get your VMs (or even physical machines) up & running in no time! No jumping though hoops to download the newest release of Windows the **second** Microsoft releases it is required: just one command and you're done!
+Mido makes downloading the latest release of Windows from **official** Microsoft servers a breeze so you can quickly get your VMs (or even physical machines) up & running in no time! No jumping though hoops to download the newest release of Windows the **second** Microsoft releases it required: just one command and you're done!
 
 All in one super simple & secure script. Comes with advanced features like download resumption, SHA-256 checksum verification, and downloading many different Windows versions in a single command. Did I mention it's written in *pure* POSIX sh (w/ few coreutils) + curl so it will run anywhere (even on Windows with WSL or MSYS2)? So robust, very minimalist!
 
 #### ❌ https://www.microsoft.com/en-us/software-download/windows11<br />
 #### ✔️ Mido, the Microsoft Windows Downloader (using the **same** official Microsoft servers)
 
+[Project demo video](demo.webm)
+
 ## How does Mido work??
 
-It interacts with Microsoft's [proprietary downloading API](https://www.microsoft.com/en-us/software-download/windows11) (reverse engineered thanks to Pete Batard, @pbatard) to grab the latest release of Windows and generate a fresh download link (lasts for 24 hours). Then we grab that link and get the file over to you as quickly as possible!
+It interacts with Microsoft's [proprietary downloading API](https://www.microsoft.com/en-us/software-download/windows11) (reverse engineered thanks to Pete Batard, @pbatard) to grab the latest release of Windows and generate a fresh download link (valid for 24 hours). Then we grab that link and get the file over to you as quickly as possible!
 
 ## What else can Mido do?
 
@@ -37,7 +39,7 @@ Check out the `create-media.sh` script in [Qvm-Create-Windows-Qube](https://gith
 
 Mido is very secure. Every chance to reduce attack surface is taken. Untrusted data is treated as such with proper validation steps. The highest possible version of TLS is always used (up to TLS 1.3). Easily verify security properties yourself in the transparent shell script.
 
-The next Shellshock/Bashdoor? POSIX sh compatible.
+The next [Shellshock/Bashdoor](https://en.wikipedia.org/wiki/Shellshock_(software_bug))? POSIX sh compatible.
 - Plus, automatically switches to a more secure shell if available
 
 Frequent [Curl HTTP 2.0 & 3.0 bugs](https://github.com/curl/curl/issues?q=is%3Aissue+label%3Acrash)? Force HTTP/1.1.
