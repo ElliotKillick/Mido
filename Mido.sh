@@ -648,6 +648,11 @@ ending_summary() {
     echo "" >&2
     exit_code=0
 
+    # Exit codes
+    # 1: One or more downloads failed
+    # 2: One or more verifications failed
+    # 3: At least one download and one verification failed
+
     if [ "$media_download_failed_list" ]; then
         for media in $media_download_failed_list; do
             media_download_failed_argument_list="$media_download_failed_argument_list ${media%%.iso}"
@@ -655,17 +660,17 @@ ending_summary() {
 
         # shellcheck disable=SC2086
         echo_err "$(word_count $media_download_failed_list) attempted download(s) failed! Please re-run Mido with these arguments to try downloading again (any partial downloads will be resumed):$media_download_failed_argument_list"
-        exit_code=1
+        exit_code="$((exit_code + 1))"
     fi
 
     if [ "$media_verification_failed_list" ]; then
         manual_verification "$media_verification_failed_list" "$checksum_verification_failed_list"
         # shellcheck disable=SC2086
         echo_err "$(word_count $media_verification_failed_list) of the downloaded Windows media did NOT match the expected checksum! This means either that the media is a newer release than our current checksum (stored in Mido), was corrupted during download, or that is has been (potentially maliciously) modified! Please manually verify the Windows media before use:$media_verification_failed_list"
-        exit_code=1
+        exit_code="$((exit_code + 2))"
     elif [ "$manual_verification" = "true" ]; then
         manual_verification
-        exit_code=1
+        exit_code="$((exit_code + 2))"
     fi
 
     if [ "$exit_code" = 0 ]; then
