@@ -204,12 +204,12 @@ handle_curl_error() {
         *)
             # "kill" is a shell builtin
             case "$(kill -l "$error_code")" in
-                # Signal defined to exist by POSIX:
+                # Signals defined to exist by POSIX:
                 # https://pubs.opengroup.org/onlinepubs/9699919799/utilities/kill.html#tag_20_64_04
+                # SEGV defined to exist by POSIX 1003.1-2001
                 INT)
                     echo_err "Curl was interrupted!"
                     ;;
-                # Technically undefined by POSIX but we let's assume a sane system
                 # There could be other signals but these are most common
                 SEGV | ABRT)
                     echo_err "Curl crashed! Failed exploitation attempt? Please report any core dumps to curl developers. Exiting..."
