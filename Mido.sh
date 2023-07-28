@@ -12,7 +12,7 @@ fi
 
 # Test for 4-bit color (16 colors)
 # Operand "colors" is undefined by POSIX
-# In that case, the terminal probably doesn't support color and the program will continue normally without it
+# If the operand doesn't exist, the terminal probably doesn't support color and the program will continue normally without it
 if [ "0$(tput colors 2> /dev/null)" -ge 16 ]; then
     RED='\033[0;31m'
     BLUE='\033[0;34m'
