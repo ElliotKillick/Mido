@@ -11,6 +11,8 @@ if [ "$BASH" ] && command -v dash > /dev/null; then
 fi
 
 # Test for 4-bit color (16 colors)
+# Operand "colors" is undefined by POSIX
+# In that case, the terminal probably doesn't support color and the program will continue normally without it
 if [ "0$(tput colors 2> /dev/null)" -ge 16 ]; then
     RED='\033[0;31m'
     BLUE='\033[0;34m'
@@ -187,11 +189,36 @@ handle_curl_error() {
         22)
             echo_err "Microsoft servers returned failing HTTP status code!"
             ;;
-        *)
+        # POSIX defines exit statuses 1-125 as usable by us
+        # https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_08_02
+        $((error_code <= 125)))
             # Must be some other server error (possibly with this specific request/file)
             # This is when accounting for all possible errors in the curl manual assuming a correctly formed curl command and HTTP(S) request, using only the curl features we're using, and a sane build
             echo_err "Server returned an error status!"
             ;;
+        126 | 127)
+            echo_err "Curl command not found! Please install curl and try again. Exiting..."
+            return "$fatal_error_action"
+            ;;
+        # Exit statuses are undefined by POSIX beyond this point
+        *)
+            # "kill" is a shell builtin
+            case "$(kill -l "$error_code")" in
+                # Signal defined to exist by POSIX:
+                # https://pubs.opengroup.org/onlinepubs/9699919799/utilities/kill.html#tag_20_64_04
+                INT)
+                    echo_err "Curl was interrupted!"
+                    ;;
+                # Technically undefined by POSIX but we let's assume a sane system
+                # There could be other signals but these are most common
+                SEGV | ABRT)
+                    echo_err "Curl crashed! Failed exploitation attempt? Please report any core dumps to curl developers. Exiting..."
+                    return "$fatal_error_action"
+                    ;;
+                *)
+                    echo_err "Curl terminated due to a fatal signal!"
+                    ;;
+            esac
     esac
 
     return 1
@@ -602,9 +629,7 @@ EOF
             verify_media_message_shown="true"
         fi
 
-        # || true: Workaround Dash "set -e" bug (Bash not affected)
-        # Triggering a trap (e.g. INT with CTRL+C) here will not work otherwise (this doesn't happend with "curl" only the "sha256sum" command for some reason)
-        checksum_line="$(sha256sum "${media}${unverified_ext}")" || true
+        checksum_line="$(sha256sum "${media}${unverified_ext}")"
         # Get first word of checksum line
         IFS=' ' read -r checksum _ << EOF
 $checksum_line
@@ -612,8 +637,8 @@ EOF
 
         # Sanity check: Assert correct size of SHA-256 checksum
         if [ ${#checksum} != 64 ]; then
-            echo_err "Failed SHA-256 sanity check! Please do not use the UNVERIFIED media (it may be corrupted or malicious). Report this bug on GitHub."
-            exit 1
+            echo_err "Failed SHA-256 sanity check! Exiting..."
+            exit 2
         fi
 
         known_checksum_list_iterator="$known_checksum_list"
@@ -646,12 +671,6 @@ EOF
 
 ending_summary() {
     echo "" >&2
-    exit_code=0
-
-    # Exit codes
-    # 1: One or more downloads failed
-    # 2: One or more verifications failed
-    # 3: At least one download and one verification failed
 
     if [ "$media_download_failed_list" ]; then
         for media in $media_download_failed_list; do
@@ -660,18 +679,38 @@ ending_summary() {
 
         # shellcheck disable=SC2086
         echo_err "$(word_count $media_download_failed_list) attempted download(s) failed! Please re-run Mido with these arguments to try downloading again (any partial downloads will be resumed):$media_download_failed_argument_list"
-        exit_code="$((exit_code + 1))"
     fi
 
     if [ "$media_verification_failed_list" ]; then
         manual_verification "$media_verification_failed_list" "$checksum_verification_failed_list"
         # shellcheck disable=SC2086
         echo_err "$(word_count $media_verification_failed_list) of the downloaded Windows media did NOT match the expected checksum! This means either that the media is a newer release than our current checksum (stored in Mido), was corrupted during download, or that is has been (potentially maliciously) modified! Please manually verify the Windows media before use:$media_verification_failed_list"
-        exit_code="$((exit_code + 2))"
     elif [ "$manual_verification" = "true" ]; then
         manual_verification
-        exit_code="$((exit_code + 2))"
     fi
+
+    # Exit codes
+    # 0: Success
+    # 1: Argument parsing error
+    # 2: Runtime error (see error message for more info)
+    # 3: One or more downloads failed
+    # 4: One or more verifications failed
+    # 5: At least one download and one verification failed (when more than one media specified)
+
+    exit_code=0
+
+    # Determine exit code
+    if [ "$media_download_failed_list" ] && [ "$media_verification_failed_list" ]; then
+        exit_code=5
+    else
+        if [ "$media_download_failed_list" ]; then
+            exit_code=3
+        elif [ "$media_verification_failed_list" ]; then
+            exit_code=2
+        fi
+    fi
+
+    trap -- - EXIT
 
     if [ "$exit_code" = 0 ]; then
         echo_ok "Successfully downloaded and verified integrity of all Windows media!"
@@ -681,25 +720,36 @@ ending_summary() {
     fi
 }
 
-exit_abrupt() {
-    exit_code="${1:-$?}"
-    echo "" >&2
-    echo_err "Mido was exited abruptly! PARTially downloaded or UNVERIFIED Windows media may exist. Please re-run this Mido command and do not use the bad media."
-    exit "$exit_code"
+# https://unix.stackexchange.com/questions/752570/why-does-trap-passthough-zero-instead-of-the-signal-the-process-was-killed-wit
+handle_exit() {
+    exit_code=$?
+    signal="$1"
+
+    if [ "$exit_code" != 0 ] || [ "$signal" ]; then
+        echo "" >&2
+        echo_err "Mido was exited abruptly! PARTially downloaded or UNVERIFIED Windows media may exist. Please re-run this Mido command and do not use the bad media."
+    fi
+
+    if [ "$exit_code" != 0 ]; then
+        trap -- - EXIT
+        exit "$exit_code"
+    elif [ "$signal" ]; then
+        trap -- - "$signal"
+        kill -s "$signal" -- $$
+    fi
 }
 
 # Enable exiting on error
-set -e
-
-parse_args "$@"
-
+#
 # Disable shell globbing
 # This isn't necessary given that all unquoted variables (e.g. for determining word count) are set directly by us but it's just a precaution
-set -f
+set -ef
 
 # IFS defaults to many different kinds of whitespace but we only care about space
 # Note: This means that ISO filenames cannot contain spaces but that's a bad idea anyway
 IFS=' '
+
+parse_args "$@"
 
 # If script is installed (in the PATH) then remain at PWD
 # Otherwise, change directory to location of script
@@ -709,9 +759,14 @@ case ":$PATH:" in
   *) cd "$local_dir" || exit ;;
 esac
 
+# POSIX sh doesn't include signals in its EXIT trap so list them ourselves
 # All trappable (excludes KILL and STOP), by default fatal to shell process (excludes CHLD and CONT), and non-unused (excludes STKFLT) signals in order from 1-20 according to signal(7)
 # SIG prefixes removed for POSIX sh compatibility
-trap exit_abrupt HUP INT QUIT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM TSTP
+for signal in HUP INT QUIT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM TSTP; do
+    # shellcheck disable=SC2064
+    trap "handle_exit $signal" "$signal"
+done
+trap handle_exit EXIT
 
 download_media
 verify_media
