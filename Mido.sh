@@ -202,11 +202,9 @@ handle_curl_error() {
             ;;
         # Exit statuses are undefined by POSIX beyond this point
         *)
-            # "kill" is a shell builtin
             case "$(kill -l "$error_code")" in
                 # Signals defined to exist by POSIX:
-                # https://pubs.opengroup.org/onlinepubs/9699919799/utilities/kill.html#tag_20_64_04
-                # SEGV defined to exist by POSIX 1003.1-2001
+                # https://pubs.opengroup.org/onlinepubs/009695399/basedefs/signal.h.html
                 INT)
                     echo_err "Curl was interrupted!"
                     ;;
@@ -706,7 +704,7 @@ ending_summary() {
         if [ "$media_download_failed_list" ]; then
             exit_code=3
         elif [ "$media_verification_failed_list" ]; then
-            exit_code=2
+            exit_code=4
         fi
     fi
 
@@ -759,12 +757,24 @@ case ":$PATH:" in
   *) cd "$local_dir" || exit ;;
 esac
 
-# POSIX sh doesn't include signals in its EXIT trap so list them ourselves
-# All trappable (excludes KILL and STOP), by default fatal to shell process (excludes CHLD and CONT), and non-unused (excludes STKFLT) signals in order from 1-20 according to signal(7)
-# SIG prefixes removed for POSIX sh compatibility
-for signal in HUP INT QUIT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM TSTP; do
+# POSIX sh doesn't include signals in its EXIT trap so do it ourselves
+signo=1
+while true; do
+    # "kill" is a shell builtin
     # shellcheck disable=SC2064
-    trap "handle_exit $signal" "$signal"
+    case "$(kill -l "$signo" 2> /dev/null)" in
+        # Trap on all catchable terminating signals as defined by POSIX
+        # Stop (i.e. suspend) signals (like Ctrl + Z or TSTP) are fine because they can be resumed
+        # Most signals result in termination so this way is easiest (Linux signal(7) only adds more terminating signals)
+        #
+        # https://pubs.opengroup.org/onlinepubs/009695399/basedefs/signal.h.html
+        # https://unix.stackexchange.com/a/490816
+        # Signal WINCH was recently added to POSIX: https://austingroupbugs.net/view.php?id=249
+        CHLD | CONT | URG | WINCH | KILL | STOP | TSTP | TTIN | TTOU) ;;
+        *) trap "handle_exit $signo" "$signo" 2> /dev/null || break ;;
+    esac
+
+    signo=$((signo + 1))
 done
 trap handle_exit EXIT
 
