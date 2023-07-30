@@ -14,7 +14,7 @@
 
 Mido makes downloading the latest release of Windows from **official** Microsoft servers a breeze so you can quickly get your VMs (or even physical machines) up & running in no time! No jumping though hoops to download the newest release of Windows the **second** Microsoft releases it required: just one command and you're done! It's very well-suited to full automation if you just want to set it and forget it too.
 
-All in one super simple & secure script. Comes with advanced features like download resumption, SHA-256 checksum verification, and downloading many different Windows versions in a single command. Did I mention it's written in *pure* POSIX sh (w/ few coreutils) + curl so it will run anywhere (even on Windows with WSL or a [Cygwin](https://www.cygwin.com/install.html) shell)? So robust, very minimalist!
+All in one super simple & secure script. Comes with advanced features like download resumption, SHA-256 checksum verification, and downloading many different Windows versions in a single command. Did I mention it's written in *pure* POSIX sh (w/ few coreutils) + curl so it will run anywhere (even on Windows with WSL or a Cygwin shell)? So robust, very minimalist!
 
 #### ❌ `https://www.microsoft.com/en-us/software-download/windows11`
 
@@ -33,6 +33,23 @@ no
 ## Get Mido
 
 Get [Mido.sh](https://raw.githubusercontent.com/ElliotKillick/Mido/main/Mido.sh) by opening the link, right-clicking and then selecting "Save [Page] as..."
+
+### Mac & Linux
+
+You're done! Just run the script to start using Mido.
+
+### Windows
+
+To run Mido on Windows, use WSL (Windows Subsystem for Linux). If you don't have it enabled already then search "Turn Windows features on or off" in the Start menu, open that, and check the "Windows Subsystem for Linux" box. This is the best option.
+
+Alternatively, install [Cygwin](https://www.cygwin.com/install.html) or [MSYS2](https://www.msys2.org/#installation) from their download pages, or in one command using WinGet:
+
+```
+winget install -e --id Cygwin.Cygwin
+winget install -e --id MSYS2.MSYS2
+```
+
+Both are POSIX emulation environments for Windows and you can use either one.
 
 ## How does Mido work??
 
@@ -55,12 +72,13 @@ Mido is very secure. Every chance to reduce attack surface is taken. Untrusted d
 No web browser (e.g headless Chromium running JavaScript) reduces the attack surface by *many* orders of magnitude.
 
 The next [Shellshock/Bashdoor](https://en.wikipedia.org/wiki/Shellshock_(software_bug))? POSIX sh compatible.
-- Plus, automatically switches to a more secure shell if available
+- Plus, automatically switches to a more secure shell (Dash) if available
+- For even *greater* security, one could use a POSIX-compliant Rust shell (e.g. nsh) with Rust coreutils (e.g. uutils). This is not the default configuration.
 
 Frequent [Curl HTTP 2.0 & 3.0 bugs](https://github.com/curl/curl/issues?q=is%3Aissue+label%3Acrash)? Force HTTP/1.1.
 - Comes at zero cost to performance for downloading files
 
-Coreutil bugs? Only builtins are used for critical components.
+Coreutil bugs? Only builtins are used for the most critical functionality.
 
 Still bugs? Wrap it in bubble wrap: `bwrap --ro-bind / / --dev-bind /dev/null /dev/null --bind "$PWD" "$PWD" --ro-bind "$PWD/Mido.sh" "$PWD/Mido.sh" --unshare-all --share-net -- ./Mido.sh --help`
 - This is the same sandbox used by Flatpak
