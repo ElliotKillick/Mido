@@ -14,7 +14,7 @@
 
 Mido makes downloading the latest release of Windows from **official** Microsoft servers a breeze so you can quickly get your VMs (or even physical machines) up & running in no time! No jumping though hoops to download the newest release of Windows the **second** Microsoft releases it required: just one command and you're done! It's very well-suited to full automation if you just want to set it and forget it too.
 
-All in one super simple & secure script. Comes with advanced features like download resumption, SHA-256 checksum verification, and downloading many different Windows versions in a single command. Did I mention it's written in *pure* POSIX sh (w/ few coreutils) + curl so it will run anywhere (even on Windows with WSL or an MSYS2 shell)? So robust, very minimalist!
+All in one super simple & secure script. Comes with advanced features like download resumption, SHA-256 checksum verification, and downloading many different Windows versions in a single command. Did I mention it's written in *pure* POSIX sh (w/ few coreutils) + curl so it will run anywhere (even on Windows with WSL or a [Cygwin](https://www.cygwin.com/install.html) shell)? So robust, very minimalist!
 
 #### ❌ `https://www.microsoft.com/en-us/software-download/windows11`
 
