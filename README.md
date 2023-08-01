@@ -9,17 +9,18 @@
 </h3>
 
 <p align="center">
-    The <b>Microsoft Windows Downloader</b> — designed to save you time
+    Open Source Microsoft <b>Media Creation Tool</b>
 </p>
 
-Mido makes downloading the latest release of Windows from **official** Microsoft servers a breeze so you can quickly get your VMs (or even physical machines) up & running in no time! No jumping though hoops to download the newest release of Windows the **second** Microsoft releases it required: just one command and you're done! It's very well-suited to full automation if you just want to set it and forget it too.
+Mido is a reverse engineered and open source version of Microsoft's Media Creation Tool. It makes downloading the latest release of Windows from **official** Microsoft servers a breeze so you can quickly get your VMs (or even physical machines) up & running in no time! No jumping though hoops to download the newest release of Windows the **second** Microsoft releases it required: just one command and you're done! It's very well-suited to full automation if you just want to set it and forget it too.
 
 All in one super simple & secure script. Comes with advanced features like download resumption, SHA-256 checksum verification, and downloading many different Windows versions in a single command. Did I mention it's written in *pure* POSIX sh (w/ few coreutils) + curl so it will run anywhere (even on Windows with WSL or a Cygwin shell)? So robust, very minimalist!
 
-#### ❌ `https://www.microsoft.com/en-us/software-download/windows11`
+#### ❌ Microsoft's Media Creation Tool (`mediacreationtool.exe`)
 
 <p align="center">
-    <img src="bloatware.png" width="200" alt="Microsoft's bloatware"></img>
+    <img src="bloatware.png" width="400" alt="Microsoft's proprietary bloatware"></img>
+    <img src="bloatware2.png" width="200" alt="Microsoft's bloatware"></img>
 </p>
 
 no
@@ -53,7 +54,7 @@ Both are POSIX emulation environments for Windows and you can use either one.
 
 ## How does Mido work??
 
-It interacts with Microsoft's [proprietary downloading API](https://www.microsoft.com/en-us/software-download/windows11) (reverse engineered thanks to Pete Batard, @pbatard) to grab the latest release of Windows and generate a fresh download link (valid for 24 hours). Then we grab that link and get the file over to you as quickly as possible!
+It interacts with Microsoft's proprietary downloading API (reverse engineered thanks to Pete Batard, @pbatard) to grab the latest release of Windows and generate a fresh download link (valid for 24 hours). Then we grab that link and get the file over to you as quickly as possible!
 
 ## What else can Mido do?
 
