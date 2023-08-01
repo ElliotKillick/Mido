@@ -71,6 +71,8 @@ Mido is very secure. Every chance to reduce attack surface is taken. Untrusted d
 
 No web browser (e.g headless Chromium running JavaScript) reduces the attack surface by *many* orders of magnitude.
 
+Microsoft download servers (e.g. [`download.microsoft.com`](https://www.ssllabs.com/ssltest/analyze.html?d=download.microsoft.com)) support insecure TLS versions 1.0 and 1.1? Force TLS 1.2 or TLS 1.3 (the latter when Microsoft servers support it).
+
 The next [Shellshock/Bashdoor](https://en.wikipedia.org/wiki/Shellshock_(software_bug))? POSIX sh compatible.
 - Plus, automatically switches to a more secure shell (Dash) if available
 - For even *greater* security, one could use a POSIX-compliant Rust shell (e.g. nsh) with Rust coreutils (e.g. uutils). This is not the default configuration.
