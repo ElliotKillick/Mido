@@ -18,10 +18,12 @@ All in one super simple & secure script. Comes with advanced features like downl
 
 #### ❌ Microsoft's Media Creation Tool (`mediacreationtool.exe`; proprietary bloatware)
 
-<img src="bloatware.png" alt="Microsoft's proprietary bloatware executable"></img>
-
-<img src="bloatware2.png" width="400px" alt="Microsoft's bloatware"></img>
-<img src="bloatware3.png" width="200px" alt="Microsoft's proprietary bloatware"></img>
+<p align="center">
+    <img src="bloatware.png" alt="Microsoft's proprietary bloatware executable"></img>
+    <br />
+    <img src="bloatware2.png" width="400px" alt="Microsoft's proprietary bloatware"></img>
+    <img src="bloatware3.png" width="200px" alt="Microsoft's bloatware"></img>
+</p>
 
 no
 
