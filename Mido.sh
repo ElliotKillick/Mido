@@ -30,7 +30,7 @@ format() { fmt --width 80; }
 word_count() { echo $#; }
 
 usage() {
-    echo "Mido - The secure Microsoft Windows Media Creation Tool"
+    echo "Mido - Open Source Microsoft Media Creation Tool"
     echo ""
     echo "Usage: $0 <windows_media>..."
     echo ""
