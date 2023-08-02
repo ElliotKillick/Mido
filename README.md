@@ -16,16 +16,16 @@ Mido is a reverse engineered and open source version of Microsoft's Media Creati
 
 All in one super simple & secure script. Comes with advanced features like download resumption, SHA-256 checksum verification, and downloading many different Windows versions in a single command. Did I mention it's written in *pure* POSIX sh (w/ few coreutils) + curl so it will run anywhere (even on Windows with WSL or a Cygwin shell)? So robust, very minimalist!
 
-#### ❌ Microsoft's Media Creation Tool (`mediacreationtool.exe`)
+#### ❌ Microsoft's Media Creation Tool (`mediacreationtool.exe`; proprietary bloatware)
 
-<p align="center">
-    <img src="bloatware.png" width="400" alt="Microsoft's proprietary bloatware"></img>
-    <img src="bloatware2.png" width="200" alt="Microsoft's bloatware"></img>
-</p>
+<img src="bloatware.png" alt="Microsoft's proprietary bloatware executable"></img>
+
+<img src="bloatware2.png" width="400px" alt="Microsoft's bloatware"></img>
+<img src="bloatware3.png" width="200px" alt="Microsoft's proprietary bloatware"></img>
 
 no
 
-#### ✔️ Mido, the Microsoft Windows Downloader (using the **same** official Microsoft servers)
+#### ✔️ Mido Media Creation Tool (using the **same** official Microsoft servers; open source awesomeness)
 
 <p align="center">
     <img src="demo.gif" width="400" alt="Project demo GIF"></img>
@@ -64,7 +64,7 @@ Want a more secure and minimalist Windows installation out-of-the-box that's off
 
 ## Want to save more time?
 
-Check out the `create-media.sh` script in [Qvm-Create-Windows-Qube](https://github.com/ElliotKillick/qvm-create-windows-qube/tree/master/windows)! Now complete with Mido Windows downloader *and* an answer file to go with each provided download. With that you will be saving time in downloading Windows *and* installing it to a VM. This is all very well-tested and could easily save you many hours of time over doing it manually. I tend to reinstall my Windows VMs quite often because they tend to get slow over time and so a refresh always helps.
+Check out the `create-media.sh` script in [Qvm-Create-Windows-Qube](https://github.com/ElliotKillick/qvm-create-windows-qube/tree/master/windows)! Now complete with Mido Windows media creation tool *and* an answer file to go with each provided download. With that you will be saving time in downloading Windows *and* installing it to a VM. This is all very well-tested and could easily save you many hours of time over doing it manually. I tend to reinstall my Windows VMs quite often because they tend to get slow over time and so a refresh always helps.
 
 ## How secure is it *really*?
 
