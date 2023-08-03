@@ -9,14 +9,16 @@
 </h3>
 
 <p align="center">
-    Open Source Microsoft <b>Media Creation Tool</b>
+    The <b>Secure</b> Microsoft Windows Downloader
 </p>
 
-Mido is a reverse engineered and open source version of Microsoft's Media Creation Tool. It makes downloading the latest release of Windows from **official** Microsoft servers a breeze so you can quickly get your VMs (or even physical machines) up & running in no time! No jumping though hoops to download the newest release of Windows the **second** Microsoft releases it required: just one command and you're done! It's very well-suited to full automation if you just want to set it and forget it too.
+Mido is a secure and open source download client for Microsoft's (reverse engineered) proprietary downloading API! Downloads are sourced from **official** Microsoft servers and you only have to run one command to from go start to finish in no time!
 
-All in one super simple & secure script. Comes with advanced features like download resumption, SHA-256 checksum verification, and downloading many different Windows versions in a single command. Did I mention it's written in *pure* POSIX sh (w/ few coreutils) + curl so it will run anywhere (even on Windows with WSL or a Cygwin shell)? So robust, very minimalist!
+Comes with advanced features like download resumption, SHA-256 checksum verification, and downloading many different Windows versions in a single command. Did I mention it's written in *pure* POSIX sh (w/ few coreutils) + curl so it will run anywhere (even on Windows with WSL or a Cygwin shell)? So robust, very minimalist!
 
-#### ❌ Microsoft's Media Creation Tool (`mediacreationtool.exe`; proprietary bloatware)
+It's very well-suited to full automation if you just want to set it and forget it too... ⭐ Start saving time today with Mido!
+
+#### ❌ Microsoft's Media Creation Tool (`mediacreationtool.exe` proprietary bloatware)
 
 <p align="center">
     <img src="bloatware.png" alt="Microsoft's proprietary bloatware executable"></img>
@@ -25,9 +27,9 @@ All in one super simple & secure script. Comes with advanced features like downl
     <img src="bloatware3.png" width="200px" alt="Microsoft's bloatware"></img>
 </p>
 
-no
+Bloated website: `https://www.microsoft.com/en-us/software-download/windows11`
 
-#### ✔️ Mido Media Creation Tool (using the **same** official Microsoft servers; open source awesomeness)
+#### ✔️ Mido (using the **same** official Microsoft servers; open source awesomeness)
 
 <p align="center">
     <img src="demo.gif" width="400" alt="Project demo GIF"></img>
@@ -66,7 +68,7 @@ Want a more secure and minimalist Windows installation out-of-the-box that's off
 
 ## Want to save more time?
 
-Check out the `create-media.sh` script in [Qvm-Create-Windows-Qube](https://github.com/ElliotKillick/qvm-create-windows-qube/tree/master/windows)! Now complete with Mido Windows media creation tool *and* an answer file to go with each provided download. With that you will be saving time in downloading Windows *and* installing it to a VM. This is all very well-tested and could easily save you many hours of time over doing it manually. I tend to reinstall my Windows VMs quite often because they tend to get slow over time and so a refresh always helps.
+Check out the `create-media.sh` script in [Qvm-Create-Windows-Qube](https://github.com/ElliotKillick/qvm-create-windows-qube/tree/master/windows)! Now complete with Mido *and* an answer file to go with each provided download. With that you will be saving time in downloading Windows *and* installing it to a VM. This is all very well-tested and could easily save you many hours of time over doing it manually. I tend to reinstall my Windows VMs quite often because they tend to get slow over time and so a refresh always helps.
 
 ## How secure is it *really*?
 
