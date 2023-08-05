@@ -74,7 +74,7 @@ Check out the `create-media.sh` script in [Qvm-Create-Windows-Qube](https://gith
 
 Mido is very secure. Every chance to reduce attack surface is taken. Untrusted data is treated as such with proper validation steps. The highest possible version of TLS is always used (up to TLS 1.3). Easily verify security properties yourself in the transparent shell script.
 
-No web browser (e.g headless Chromium running JavaScript) reduces the attack surface by *many* orders of magnitude.
+No web browser (e.g. headless Chromium running JavaScript) reduces the attack surface by *many* orders of magnitude.
 
 Microsoft download servers (e.g. [`download.microsoft.com`](https://www.ssllabs.com/ssltest/analyze.html?d=download.microsoft.com)) support insecure TLS versions 1.0 and 1.1? Force TLS 1.2 or TLS 1.3 (the latter when Microsoft servers support it).
 
