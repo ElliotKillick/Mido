@@ -69,7 +69,7 @@ Want a more secure and minimalist Windows installation out-of-the-box that's off
 
 ## Want to save more time?
 
-Check out the `create-media.sh` script in [Qvm-Create-Windows-Qube](https://github.com/ElliotKillick/qvm-create-windows-qube/tree/master/windows)! Now complete with Mido *and* an answer file to go with each provided download. With that you will be saving time in downloading Windows *and* installing it to a VM. This is all very well-tested and could easily save you many hours of time over doing it manually. I tend to reinstall my Windows VMs quite often because they tend to get slow over time and so a refresh always helps.
+Check out the `create-media.sh` script in [Qvm-Create-Windows-Qube](https://github.com/ElliotKillick/qvm-create-windows-qube/tree/master/windows)! Now complete with Mido *and* an answer file to go with each provided download. With that you will be saving time in downloading Windows *and* installing it to a VM. This is all very well-tested and could easily save you many hours of time over doing it manually. I usually reinstall my Windows VMs quite often because they tend to get slow over time and so a refresh always helps.
 
 ## How secure is it *really*?
 
