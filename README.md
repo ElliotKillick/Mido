@@ -28,6 +28,7 @@ It's very well-suited to full automation if you just want to set it and forget i
 </p>
 
 Bloated website: `https://www.microsoft.com/en-us/software-download/windows11`
+- Mido provides the exact same downloads as this website (it uses the same API)
 
 #### ✔️ Mido (using the **same** official Microsoft servers; open source awesomeness)
 
