@@ -46,7 +46,7 @@ You're done! Just run the script to start using Mido.
 
 ### Windows
 
-To run Mido on Windows, use WSL (Windows Subsystem for Linux). If you don't have it enabled already then search "Turn Windows features on or off" in the Start menu, open that, and check the "Windows Subsystem for Linux" box. This is the best option.
+To run Mido on Windows, use WSL (Windows Subsystem for Linux). If you don't have it enabled already then search "Turn Windows features on or off" in the Start menu, open that, check the "Windows Subsystem for Linux" box, and click "OK". This is the best option.
 
 Alternatively, install [Cygwin](https://www.cygwin.com/install.html) or [MSYS2](https://www.msys2.org/#installation) from their download pages, or in one command using WinGet:
 
