@@ -42,7 +42,7 @@ Get [Mido.sh](https://raw.githubusercontent.com/ElliotKillick/Mido/main/Mido.sh)
 
 ### Mac & Linux
 
-You're done! Just run the script to start using Mido.
+You're done! Just open a terminal, give the file execution permissions (`chmod +x Mido.sh`), and run the script (as seen in the above GIF) to start using Mido.
 
 ### Windows
 
