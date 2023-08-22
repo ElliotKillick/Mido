@@ -30,7 +30,7 @@ It's very well-suited to full automation if you just want to set it and forget i
 Bloated website: `https://www.microsoft.com/en-us/software-download/windows11`
 - Mido provides the exact same downloads as this website (it uses the same API)
 
-#### ✔️ Mido (using the **same** official Microsoft servers; <img src="https://awesome.re/badge.svg" style="position: relative; top: 6px;"></img> open source software)
+#### ✔️ Mido (using the **same** official Microsoft servers; <img src="https://awesome.re/badge.svg" style="position: relative; top: 5px;"></img> open source software)
 
 <p align="center">
     <img src="demo.gif" width="400" alt="Project demo GIF"></img>
