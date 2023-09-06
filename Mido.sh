@@ -25,7 +25,8 @@ echo_ok() { printf "%b%s%b" "${GREEN}[+]${NC} " "$1" "\n" >&2; }
 echo_info() { printf "%b%s%b" "${BLUE}[i]${NC} " "$1" "\n" >&2; }
 echo_err() { printf "%b%s%b" "${RED}[!]${NC} " "$1" "\n" >&2; }
 
-format() { fmt --width 80; }
+# https://pubs.opengroup.org/onlinepubs/9699919799/utilities/fold.html
+format() { fold -s; }
 
 word_count() { echo $#; }
 
@@ -333,9 +334,10 @@ consumer_download() {
     }
 
     # Limit untrusted size for input validation
-    iso_download_page_html="$(echo "$iso_download_page_html" | head --bytes 102400)"
+    iso_download_page_html="$(echo "$iso_download_page_html" | head -c 102400)"
     # tr: Filter for only numerics to prevent HTTP parameter injection
-    product_edition_id="$(echo "$iso_download_page_html" | grep --extended-regexp --only-matching '<option value="[0-9]+">Windows' | cut --delimiter '"' --fields 2 | head --lines 1 | tr --complement --delete '0-9' | head --bytes 16)"
+    # head -c was recently added to POSIX: https://austingroupbugs.net/view.php?id=407
+    product_edition_id="$(echo "$iso_download_page_html" | grep -Eo '<option value="[0-9]+">Windows' | cut -d '"' -f 2 | head -n 1 | tr -cd '0-9' | head -c 16)"
     [ "$VERBOSE" ] && echo "Product edition ID: $product_edition_id" >&2
 
     # Permit Session ID
@@ -361,7 +363,7 @@ consumer_download() {
     # Limit untrusted size for input validation
     language_skuid_table_html="$(echo "$language_skuid_table_html" | head --bytes 10240)"
     # tr: Filter for only alphanumerics or "-" to prevent HTTP parameter injection
-    sku_id="$(echo "$language_skuid_table_html" | grep "English (United States)" | sed 's/&quot;//g' | cut --delimiter ',' --fields 1  | cut --delimiter ':' --fields 2 | tr --complement --delete '[:alnum:]-' | head --bytes 16)"
+    sku_id="$(echo "$language_skuid_table_html" | grep "English (United States)" | sed 's/&quot;//g' | cut -d ',' -f 1  | cut -d ':' -f 2 | tr -cd '[:alnum:]-' | head -c 16)"
     [ "$VERBOSE" ] && echo "SKU ID: $sku_id" >&2
 
     # Get ISO download link
@@ -374,7 +376,7 @@ consumer_download() {
     }
 
     # Limit untrusted size for input validation
-    iso_download_link_html="$(echo "$iso_download_link_html" | head --bytes 4096)"
+    iso_download_link_html="$(echo "$iso_download_link_html" | head -c 4096)"
 
     if ! [ "$iso_download_link_html" ]; then
         # This should only happen if there's been some change to how this API works
@@ -383,7 +385,7 @@ consumer_download() {
         return 1
     fi
 
-    if echo "$iso_download_link_html" | grep --quiet "We are unable to complete your request at this time."; then
+    if echo "$iso_download_link_html" | grep -q "We are unable to complete your request at this time."; then
         echo_err "Microsoft blocked the automated download request based on your IP address. Please manually download this ISO in a web browser here: $url"
         manual_verification="true"
         return 1
@@ -392,7 +394,7 @@ consumer_download() {
     # Filter for 64-bit ISO download URL
     # sed: HTML decode "&" character
     # tr: Filter for only alphanumerics or punctuation
-    iso_download_link="$(echo "$iso_download_link_html" | grep --only-matching "https://software.download.prss.microsoft.com.*IsoX64" | cut --delimiter '"' --fields 1 | sed 's/&amp;/\&/g' | tr --complement --delete '[:alnum:][:punct:]' | head --bytes 512)"
+    iso_download_link="$(echo "$iso_download_link_html" | grep -o "https://software.download.prss.microsoft.com.*IsoX64" | cut -d '"' -f 1 | sed 's/&amp;/\&/g' | tr -cd '[:alnum:][:punct:]' | head -c 512)"
 
     if ! [ "$iso_download_link" ]; then
         # This should only happen if there's been some change to the download endpoint web address
@@ -422,7 +424,7 @@ enterprise_eval_download() {
     }
 
     # Limit untrusted size for input validation
-    iso_download_page_html="$(echo "$iso_download_page_html" | head --bytes 102400)"
+    iso_download_page_html="$(echo "$iso_download_page_html" | head -c 102400)"
 
     if ! [ "$iso_download_page_html" ]; then
         # This should only happen if there's been some change to where this download page is located
@@ -430,20 +432,20 @@ enterprise_eval_download() {
         return 1
     fi
 
-    iso_download_links="$(echo "$iso_download_page_html" | grep --only-matching "https://go.microsoft.com/fwlink/p/?LinkID=[0-9]\+&clcid=0x[0-9a-z]\+&culture=en-us&country=US")" || {
+    iso_download_links="$(echo "$iso_download_page_html" | grep -o "https://go.microsoft.com/fwlink/p/?LinkID=[0-9]\+&clcid=0x[0-9a-z]\+&culture=en-us&country=US")" || {
         # This should only happen if there's been some change to the download endpoint web address
         echo_err "Windows enterprise evaluation download page gave us no download link"
         return 1
     }
 
     # Limit untrusted size for input validation
-    iso_download_links="$(echo "$iso_download_links" | head --bytes 1024)"
+    iso_download_links="$(echo "$iso_download_links" | head -c 1024)"
 
     case "$enterprise_type" in
         # Select x64 download link
-        "enterprise") iso_download_link=$(echo "$iso_download_links" | head --lines 2 | tail --lines 1) ;;
+        "enterprise") iso_download_link=$(echo "$iso_download_links" | head -n 2 | tail -n 1) ;;
         # Select x64 LTSC download link
-        "ltsc") iso_download_link=$(echo "$iso_download_links" | head --lines 4 | tail --lines 1) ;;
+        "ltsc") iso_download_link=$(echo "$iso_download_links" | head -n 4 | tail -n 1) ;;
         *) iso_download_link="$iso_download_links" ;;
     esac
 
@@ -751,6 +753,7 @@ parse_args "$@"
 
 # If script is installed (in the PATH) then remain at PWD
 # Otherwise, change directory to location of script
+# readlink was recently added to POSIX: https://austingroupbugs.net/view.php?id=1457
 local_dir="$(dirname -- "$(readlink -f -- "$0")")"
 case ":$PATH:" in
   *":$local_dir:"*) ;;
