@@ -41,6 +41,7 @@ usage() {
     echo "  win7x64-ultimate"
     echo "  win81x64"
     echo "  win10x64"
+    echo "  win10x32"
     echo "  win11x64"
     echo "  win81x64-enterprise-eval"
     echo "  win10x64-enterprise-eval"
@@ -85,6 +86,7 @@ usage() {
 readonly win7x64_ultimate="win7x64-ultimate.iso"
 readonly win81x64="win81x64.iso"
 readonly win10x64="win10x64.iso"
+readonly win10x32="win10x32.iso"
 readonly win11x64="win11x64.iso"
 readonly win81x64_enterprise_eval="win81x64-enterprise-eval.iso"
 readonly win10x64_enterprise_eval="win10x64-enterprise-eval.iso"
@@ -120,6 +122,9 @@ parse_args() {
                 ;;
             win10x64)
                 media_list="$media_list $win10x64"
+                ;;
+            win10x32)
+                media_list="$media_list $win10x32"
                 ;;
             win11x64)
                 media_list="$media_list $win11x64"
@@ -313,6 +318,10 @@ consumer_download() {
     out_file="$1"
     # Either 8, 10, or 11
     windows_version="$2"
+    # X86 / X64
+    windows_arch="${3:-X64}"
+    # force upper case (dash does not support ${windows_arch^^}
+    windows_arch="$(echo $windows_arch | tr '[:lower:]' '[:upper:]')"
 
     url="https://www.microsoft.com/en-us/software-download/windows$windows_version"
     case "$windows_version" in
@@ -394,7 +403,7 @@ consumer_download() {
     # Filter for 64-bit ISO download URL
     # sed: HTML decode "&" character
     # tr: Filter for only alphanumerics or punctuation
-    iso_download_link="$(echo "$iso_download_link_html" | grep -o "https://software.download.prss.microsoft.com.*IsoX64" | cut -d '"' -f 1 | sed 's/&amp;/\&/g' | tr -cd '[:alnum:][:punct:]' | head -c 512)"
+    iso_download_link="$(echo "$iso_download_link_html" | grep -o "https://software.download.prss.microsoft.com.*Iso${windows_arch}" | cut -d '"' -f 1 | sed 's/&amp;/\&/g' | tr -cd '[:alnum:][:punct:]' | head -c 512)"
 
     if ! [ "$iso_download_link" ]; then
         # This should only happen if there's been some change to the download endpoint web address
@@ -503,6 +512,10 @@ download_media() {
                 echo_info "Downloading Windows 10..."
                 consumer_download "$media" 10
                 ;;
+            "$win10x32")
+                echo_info "Downloading Windows 10 32bit..."
+                consumer_download "$media" 10 x86
+                ;;
             "$win11x64")
                 echo_info "Downloading Windows 11..."
                 consumer_download "$media" 11
@@ -583,6 +596,7 @@ dec04cbd352b453e437b2fe9614b67f28f7c0b550d8351827bc1e9ef3f601389  win7x64-ultima
 d8333cf427eb3318ff6ab755eb1dd9d433f0e2ae43745312c1cd23e83ca1ce51  win81x64.iso
 # Windows 10 22H2 May 2023 Update
 a6f470ca6d331eb353b815c043e327a347f594f37ff525f17764738fe812852e  win10x64.iso
+AC0B7045B6C3A72A4D46DAAB0944E109A55D9EDE3A11B775FDB57C2DD3FCA2EF  win10x32.iso
 # Windwws 11 22H2 May 2023 Update
 8059a99b8902906a90afe068ac00465c52588c2bd54f5d9d96c1297f88ef1076  win11x64.iso
 2dedd44c45646c74efc5a028f65336027e14a56f76686a4631cf94ffe37c72f2  win81x64-enterprise-eval.iso
