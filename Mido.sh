@@ -157,7 +157,7 @@ parse_args() {
                 media_list="$media_list $win2022_eval"
                 ;;
             all)
-                media_list="$win7x64_ultimate $win81x64 $win10x64 $win11x64 $win81x64_enterprise_eval $win10x64_enterprise_eval $win11x64_enterprise_eval $win10x64_enterprise_ltsc_eval $win2008r2 $win2012r2_eval $win2016_eval $win2019_eval $win2022_eval"
+                media_list="$win7x64_ultimate $win81x64 $win10x64 $win10x32 $win11x64 $win81x64_enterprise_eval $win10x64_enterprise_eval $win11x64_enterprise_eval $win10x64_enterprise_ltsc_eval $win2008r2 $win2012r2_eval $win2016_eval $win2019_eval $win2022_eval"
                 break
                 ;;
             *)
