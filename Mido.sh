@@ -193,9 +193,9 @@ handle_curl_error() {
         # POSIX defines exit statuses 1-125 as usable by us
         # https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_08_02
         $((error_code <= 125)))
-            # Must be some other server error (possibly with this specific request/file)
+            # Must be some other server or network error (possibly with this specific request/file)
             # This is when accounting for all possible errors in the curl manual assuming a correctly formed curl command and HTTP(S) request, using only the curl features we're using, and a sane build
-            echo_err "Server returned an error status!"
+            echo_err "Miscellaneous server or network error!"
             ;;
         126 | 127)
             echo_err "Curl command not found! Please install curl and try again. Exiting..."
