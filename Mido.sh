@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (C) 2023 Elliot Killick <contact@elliotkillick.com>
+# Copyright (C) 2024 Elliot Killick <contact@elliotkillick.com>
 # Licensed under the MIT License. See LICENSE file for details.
 
 [ "$DEBUG" ] && set -x
@@ -176,6 +176,12 @@ handle_curl_error() {
         7)
             echo_err "Failed to contact Microsoft servers! Is there an Internet connection or is the server down?"
             ;;
+        8)
+            echo_err "Microsoft servers returned a malformed HTTP response!"
+            ;;
+        22)
+            echo_err "Microsoft servers returned a failing HTTP status code!"
+            ;;
         23)
             echo_err "Failed at writing Windows media to disk! Out of disk space or permission error? Exiting..."
             return "$fatal_error_action"
@@ -187,8 +193,8 @@ handle_curl_error() {
         36)
             echo_err "Failed to continue earlier download!"
             ;;
-        22)
-            echo_err "Microsoft servers returned failing HTTP status code!"
+        63)
+            echo_err "Microsoft servers returned an unexpectedly large response!"
             ;;
         # POSIX defines exit statuses 1-125 as usable by us
         # https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_08_02
@@ -235,7 +241,7 @@ scurl_file() {
 
     # --location: Microsoft likes to change which endpoint these downloads are stored on but is usually kind enough to add redirects
     # --fail: Return an error on server errors where the HTTP response code is 400 or greater
-    curl --progress-bar --location --output "$part_file" --continue-at - --fail --proto =https "--tlsv$tls_version" --http1.1 -- "$url" || {
+    curl --progress-bar --location --output "$part_file" --continue-at - --max-filesize 10G --fail --proto =https "--tlsv$tls_version" --http1.1 -- "$url" || {
         error_code=$?
         handle_curl_error "$error_code"
         error_action=$?
@@ -297,18 +303,13 @@ EOF
 }
 
 consumer_download() {
+    # Copyright (C) 2024 Elliot Killick <contact@elliotkillick.com>
+    # Licensed under the MIT License. See LICENSE file for details.
+    #
+    # This function is from the Mido project:
+    # https://github.com/ElliotKillick/Mido
+
     # Download newer consumer Windows versions from behind gated Microsoft API
-    # This function aims to precisely emulate what Fido does down to the URL requests and HTTP headers (exceptions: updated user agent and referer adapts to Windows version instead of always being "windows11") but written in POSIX sh (with coreutils) and curl instead of PowerShell (also simplified to greatly reduce attack surface)
-    # However, differences such as the order of HTTP headers and TLS stacks (could be used to do TLS fingerprinting) still exist
-    #
-    # Command translated: ./Fido -Win 10 -Lang English -Verbose
-    # "English" = "English (United States)" (as opposed to the default "English (International)")
-    # For testing Fido, replace all "https://" with "http://" and remove all instances of "-MaximumRedirection 0" (to allow redirection of HTTP traffic to HTTPS) so HTTP requests can easily be inspected in Wireshark
-    # Fido (command-line only) works under PowerShell for Linux if that makes it easier for you
-    # UPDATE: Fido v1.4.2+ no longer works without being edited on Linux due to these issues on the Fido GitHub repo (and possibly others after these): #56 and #58
-    #
-    # If this function in Mido fails to work for you then please test with the Fido script before creating an issue because we basically just copy what Fido does exactly:
-    # https://github.com/pbatard/Fido
 
     out_file="$1"
     # Either 8, 10, or 11
@@ -325,16 +326,14 @@ consumer_download() {
 
     # Get product edition ID for latest release of given Windows version
     # Product edition ID: This specifies both the Windows release (e.g. 22H2) and edition ("multi-edition" is default, either Home/Pro/Edu/etc., we select "Pro" in the answer files) in one number
-    # This is the *only* request we make that Fido doesn't. Fido manually maintains a list of all the Windows release/edition product edition IDs in its script (see: $WindowsVersions array). This is helpful for downloading older releases (e.g. Windows 10 1909, 21H1, etc.) but we always want to get the newest release which is why we get this value dynamically
+    # This is a request we make that Fido doesn't. Fido manually maintains a list of all the Windows release/edition product edition IDs in its script (see: $WindowsVersions array). This is helpful for downloading older releases (e.g. Windows 10 1909, 21H1, etc.) but we always want to get the newest release which is why we get this value dynamically
     # Also, keeping a "$WindowsVersions" array like Fido does would be way too much of a maintenance burden
-    # Remove "Accept" header that curl sends by default
-    iso_download_page_html="$(curl --user-agent "$user_agent" --header "Accept:" --fail --proto =https --tlsv1.2 --http1.1 -- "$url")" || {
+    # Remove "Accept" header that curl sends by default (match Fido requests)
+    iso_download_page_html="$(curl --user-agent "$user_agent" --header "Accept:" --max-filesize 1M --fail --proto =https --tlsv1.2 --http1.1 -- "$url")" || {
         handle_curl_error $?
         return $?
     }
 
-    # Limit untrusted size for input validation
-    iso_download_page_html="$(echo "$iso_download_page_html" | head -c 102400)"
     # tr: Filter for only numerics to prevent HTTP parameter injection
     # head -c was recently added to POSIX: https://austingroupbugs.net/view.php?id=407
     product_edition_id="$(echo "$iso_download_page_html" | grep -Eo '<option value="[0-9]+">Windows' | cut -d '"' -f 2 | head -n 1 | tr -cd '0-9' | head -c 16)"
@@ -342,8 +341,8 @@ consumer_download() {
 
     # Permit Session ID
     # "org_id" is always the same value
-    curl --output /dev/null --user-agent "$user_agent" --header "Accept:" --fail --proto =https --tlsv1.2 --http1.1 -- "https://vlscppe.microsoft.com/tags?org_id=y6jn8c31&session_id=$session_id" || {
-        # This should only happen if there's been some change to how this API works (copy whatever fix Fido implements)
+    curl --output /dev/null --user-agent "$user_agent" --header "Accept:" --max-filesize 100K --fail --proto =https --tlsv1.2 --http1.1 -- "https://vlscppe.microsoft.com/tags?org_id=y6jn8c31&session_id=$session_id" || {
+        # This should only happen if there's been some change to how this API works
         handle_curl_error $?
         return $?
     }
@@ -355,13 +354,11 @@ consumer_download() {
     # SKU ID: This specifies the language of the ISO. We always use "English (United States)", however, the SKU for this changes with each Windows release
     # We must make this request so our next one will be allowed
     # --data "" is required otherwise no "Content-Length" header will be sent causing HTTP response "411 Length Required"
-    language_skuid_table_html="$(curl --request POST --user-agent "$user_agent" --data "" --header "Accept:" --fail --proto =https --tlsv1.2 --http1.1 -- "https://www.microsoft.com/en-US/api/controls/contentinclude/html?pageId=a8f8f489-4c7f-463a-9ca6-5cff94d8d041&host=www.microsoft.com&segments=software-download,$url_segment_parameter&query=&action=getskuinformationbyproductedition&sessionId=$session_id&productEditionId=$product_edition_id&sdVersion=2")" || {
+    language_skuid_table_html="$(curl --request POST --user-agent "$user_agent" --data "" --header "Accept:" --max-filesize 10K --fail --proto =https --tlsv1.2 --http1.1 -- "https://www.microsoft.com/en-US/api/controls/contentinclude/html?pageId=a8f8f489-4c7f-463a-9ca6-5cff94d8d041&host=www.microsoft.com&segments=software-download,$url_segment_parameter&query=&action=getskuinformationbyproductedition&sessionId=$session_id&productEditionId=$product_edition_id&sdVersion=2")" || {
         handle_curl_error $?
         return $?
     }
 
-    # Limit untrusted size for input validation
-    language_skuid_table_html="$(echo "$language_skuid_table_html" | head -c 10240)"
     # tr: Filter for only alphanumerics or "-" to prevent HTTP parameter injection
     sku_id="$(echo "$language_skuid_table_html" | grep "English (United States)" | sed 's/&quot;//g' | cut -d ',' -f 1  | cut -d ':' -f 2 | tr -cd '[:alnum:]-' | head -c 16)"
     [ "$VERBOSE" ] && echo "SKU ID: $sku_id" >&2
@@ -369,14 +366,11 @@ consumer_download() {
     # Get ISO download link
     # If any request is going to be blocked by Microsoft it's always this last one (the previous requests always seem to succeed)
     # --referer: Required by Microsoft servers to allow request
-    iso_download_link_html="$(curl --request POST --user-agent "$user_agent" --data "" --referer "$url" --header "Accept:" --fail --proto =https --tlsv1.2 --http1.1 -- "https://www.microsoft.com/en-US/api/controls/contentinclude/html?pageId=6e2a1789-ef16-4f27-a296-74ef7ef5d96b&host=www.microsoft.com&segments=software-download,$url_segment_parameter&query=&action=GetProductDownloadLinksBySku&sessionId=$session_id&skuId=$sku_id&language=English&sdVersion=2")" || {
+    iso_download_link_html="$(curl --request POST --user-agent "$user_agent" --data "" --referer "$url" --header "Accept:" --max-filesize 100K --fail --proto =https --tlsv1.2 --http1.1 -- "https://www.microsoft.com/en-US/api/controls/contentinclude/html?pageId=6e2a1789-ef16-4f27-a296-74ef7ef5d96b&host=www.microsoft.com&segments=software-download,$url_segment_parameter&query=&action=GetProductDownloadLinksBySku&sessionId=$session_id&skuId=$sku_id&language=English&sdVersion=2")" || {
         # This should only happen if there's been some change to how this API works
         handle_curl_error $?
         return $?
     }
-
-    # Limit untrusted size for input validation
-    iso_download_link_html="$(echo "$iso_download_link_html" | head -c 4096)"
 
     if ! [ "$iso_download_link_html" ]; then
         # This should only happen if there's been some change to how this API works
@@ -410,6 +404,12 @@ consumer_download() {
 }
 
 enterprise_eval_download() {
+    # Copyright (C) 2024 Elliot Killick <contact@elliotkillick.com>
+    # Licensed under the MIT License. See LICENSE file for details.
+    #
+    # This function is from the Mido project:
+    # https://github.com/ElliotKillick/Mido
+
     # Download enterprise evaluation Windows versions
 
     out_file="$1"
@@ -418,13 +418,10 @@ enterprise_eval_download() {
 
     url="https://www.microsoft.com/en-us/evalcenter/download-$windows_version"
 
-    iso_download_page_html="$(curl --location --fail --proto =https --tlsv1.2 --http1.1 -- "$url")" || {
+    iso_download_page_html="$(curl --location --max-filesize 1M --fail --proto =https --tlsv1.2 --http1.1 -- "$url")" || {
         handle_curl_error $?
         return $?
     }
-
-    # Limit untrusted size for input validation
-    iso_download_page_html="$(echo "$iso_download_page_html" | head -c 102400)"
 
     if ! [ "$iso_download_page_html" ]; then
         # This should only happen if there's been some change to where this download page is located
@@ -450,11 +447,16 @@ enterprise_eval_download() {
     esac
 
     # Follow redirect so proceeding log message is useful
+    # This is a request we make this Fido doesn't
+    # We don't need to set "--max-filesize" here because this is a HEAD request and the output is to /dev/null anyway
     iso_download_link="$(curl --location --output /dev/null --silent --write-out "%{url_effective}" --head --fail --proto =https --tlsv1.2 --http1.1 -- "$iso_download_link")" || {
         # This should only happen if the Microsoft servers are down
         handle_curl_error $?
         return $?
     }
+
+    # Limit untrusted size for input validation
+    iso_download_link="$(echo "$iso_download_link" | head -c 1024)"
 
     echo_ok "Got latest ISO download link: $iso_download_link"
 
@@ -472,11 +474,6 @@ download_media() {
     echo_info "Downloading Windows media from official Microsoft servers..."
 
     media_download_failed_list=""
-
-    # Always use HTTP/1.1 (--http1.1) because HTTP/2 and HTTP/3 have proven too buggy in curl:
-    # https://github.com/curl/curl/issues?q=is%3Aissue+label%3Acrash
-    # HTTP 2 and 3 don't provide a performance benefit for downloading large files anyway (tested)
-    # It's a free security enchancement
 
     for media in $media_list; do
         case "$media" in
@@ -583,8 +580,8 @@ dec04cbd352b453e437b2fe9614b67f28f7c0b550d8351827bc1e9ef3f601389  win7x64-ultima
 d8333cf427eb3318ff6ab755eb1dd9d433f0e2ae43745312c1cd23e83ca1ce51  win81x64.iso
 # Windows 10 22H2
 a6f470ca6d331eb353b815c043e327a347f594f37ff525f17764738fe812852e  win10x64.iso
-# Windows 11 23H2
-71a7ae6974866603d366a911b0c00eace476e0b49d12205d7529765cc50b4b39  win11x64.iso
+# Windows 11 23H2 v2
+36de5ecb7a0daa58dce68c03b9465a543ed0f5498aa8ae60ab45fb7c8c4ae402  win11x64.iso
 2dedd44c45646c74efc5a028f65336027e14a56f76686a4631cf94ffe37c72f2  win81x64-enterprise-eval.iso
 ef7312733a9f5d7d51cfa04ac497671995674ca5e1058d5164d6028f0938d668  win10x64-enterprise-eval.iso
 ebbc79106715f44f5020f77bd90721b17c5a877cbc15a3535b99155493a1bb3f  win11x64-enterprise-eval.iso
@@ -695,7 +692,7 @@ ending_summary() {
     # 2: Runtime error (see error message for more info)
     # 3: One or more downloads failed
     # 4: One or more verifications failed
-    # 5: At least one download and one verification failed (when more than one media specified)
+    # 5: At least one download and one verification failed (when more than one media is specified)
 
     exit_code=0
 

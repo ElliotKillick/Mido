@@ -1,6 +1,6 @@
 <div align="center">
     <a href="https://github.com/ElliotKillick/Mido">
-        <img width="160" src="logo.png" alt="Logo" />
+        <img width="160" src="assets/logo.png" alt="Logo" />
     </a>
 </div>
 
@@ -21,19 +21,19 @@ It's very well-suited to full automation if you just want to set it and forget i
 #### ❌ Microsoft's Media Creation Tool (`mediacreationtool.exe` proprietary bloatware)
 
 <p align="center">
-    <img src="bloatware.png" alt="Microsoft's proprietary bloatware executable"></img>
+    <img src="assets/bloatware1.png" alt="Microsoft's proprietary bloatware executable"></img>
     <br />
-    <img src="bloatware2.png" width="250px" alt="Microsoft's proprietary bloatware"></img>
-    <img src="bloatware3.png" width="200px" alt="Microsoft's bloatware"></img>
+    <img src="assets/bloatware2.png" width="250px" alt="Microsoft's proprietary bloatware"></img>
+    <img src="assets/bloatware3.png" width="200px" alt="Microsoft's bloatware"></img>
 </p>
 
 Bloated website: `https://www.microsoft.com/en-us/software-download/windows11`
 - Mido provides the exact same downloads as this website (it uses the same API)
 
-#### ✔️ Mido (using the **same** official Microsoft servers; <img src="https://awesome.re/badge.svg" style="position: relative; top: 5px;"></img> open source software)
+#### ✅ Mido (using the **same** official Microsoft servers; <img src="https://awesome.re/badge.svg" style="position: relative; top: 5px;"></img> open source software)
 
 <p align="center">
-    <img src="demo.gif" width="400" alt="Project demo GIF"></img>
+    <img src="assets/demo.gif" width="400" alt="Project demo GIF"></img>
 </p>
 
 ## Get Mido
@@ -73,7 +73,7 @@ Check out the `create-media.sh` script in [Qvm-Create-Windows-Qube](https://gith
 
 ## How secure is it *really*?
 
-Mido is very secure. Every chance to reduce attack surface is taken. Untrusted data is treated as such with proper validation steps. The highest possible version of TLS is always used (up to TLS 1.3). Easily verify security properties yourself in the transparent shell script.
+Mido is super secure. Every chance to reduce attack surface is taken. Untrusted data is treated as such with proper validation steps. The highest possible version of TLS is always used (up to TLS 1.3). Easily verify security properties yourself in the transparent shell script.
 
 No web browser (e.g. headless Chromium running JavaScript) reduces the attack surface by *many* orders of magnitude.
 
@@ -84,7 +84,7 @@ The next [Shellshock/Bashdoor](https://en.wikipedia.org/wiki/Shellshock_(softwar
 - For even *greater* security, one could use a POSIX-compliant Rust shell (e.g. nsh) with Rust coreutils (e.g. uutils). This is not the default configuration.
 
 Frequent [Curl HTTP 2.0 & 3.0 bugs](https://github.com/curl/curl/issues?q=is%3Aissue+label%3Acrash)? Force HTTP/1.1.
-- Comes at zero cost to performance for downloading files
+- Comes at zero cost to performance for downloading a single large file
 
 Coreutil bugs? Only builtins are used for the most critical functionality.
 
