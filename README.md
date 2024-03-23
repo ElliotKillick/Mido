@@ -88,7 +88,7 @@ Frequent [Curl HTTP 2.0 & 3.0 bugs](https://github.com/curl/curl/issues?q=is%3Ai
 
 Coreutil bugs? Only builtins are used for the most critical functionality.
 
-Still bugs? Wrap it in bubble wrap: `bwrap --ro-bind /bin /bin --ro-bind /usr/bin /usr/bin --ro-bind /lib /lib --ro-bind /usr/lib /usr/lib --ro-bind /lib64 /lib64 --ro-bind /usr/lib64 /usr/lib64 --ro-bind /etc /etc --dev-bind /dev/null /dev/null --bind "$PWD" "$PWD" --ro-bind "$PWD/Mido.sh" "$PWD/Mido.sh" --unshare-all --share-net -- ./Mido.sh --help`
+Still bugs? Wrap it in bubble wrap: `bwrap --ro-bind /bin /bin --ro-bind /usr/bin /usr/bin --ro-bind /lib /lib --ro-bind /usr/lib /usr/lib --ro-bind /lib64 /lib64 --ro-bind /usr/lib64 /usr/lib64 --ro-bind /usr/share /usr/share --ro-bind /etc /etc --dev-bind /dev/null /dev/null --bind "$PWD" "$PWD" --ro-bind "$PWD/Mido.sh" "$PWD/Mido.sh" --unshare-all --share-net -- ./Mido.sh --help`
 - This is the same sandbox used by Flatpak
 - Here, we have a fine-grained sandbox configuration tested to work on Debian and Fedora (likely others)
 - Compartmentalize further by running Mido in its own unprivileged user account or even it's own disposable VM on Qubes OS
