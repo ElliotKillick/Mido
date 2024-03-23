@@ -73,7 +73,7 @@ Check out the `create-media.sh` script in [Qvm-Create-Windows-Qube](https://gith
 
 ## How secure is it *really*?
 
-Mido is super secure. Every chance to reduce attack surface is taken. Untrusted data is treated as such with proper validation steps. The highest possible version of TLS is always used (up to TLS 1.3). Easily verify security properties yourself in the transparent shell script.
+Mido is reasonably secure software. Every chance to reduce attack surface is taken. Untrusted data is treated as such with proper validation steps. The highest possible version of TLS is always used (up to TLS 1.3). Easily verify security properties yourself in the transparent shell script.
 
 No web browser (e.g. headless Chromium running JavaScript) reduces the attack surface by *many* orders of magnitude.
 
@@ -81,15 +81,16 @@ Microsoft download servers (e.g. [`download.microsoft.com`](https://www.ssllabs.
 
 The next [Shellshock/Bashdoor](https://en.wikipedia.org/wiki/Shellshock_(software_bug))? POSIX sh compatible.
 - Plus, automatically switches to a more secure shell (Dash) if available
-- For even *greater* security, one could use a POSIX-compliant Rust shell (e.g. nsh) with Rust coreutils (e.g. uutils). This is not the default configuration.
+- For even *greater* security, one could use a POSIX-compliant Rust shell with Rust coreutils (e.g. uutils). This is not the default configuration.
 
 Frequent [Curl HTTP 2.0 & 3.0 bugs](https://github.com/curl/curl/issues?q=is%3Aissue+label%3Acrash)? Force HTTP/1.1.
 - Comes at zero cost to performance for downloading a single large file
 
 Coreutil bugs? Only builtins are used for the most critical functionality.
 
-Still bugs? Wrap it in bubble wrap: `bwrap --ro-bind / / --dev-bind /dev/null /dev/null --bind "$PWD" "$PWD" --ro-bind "$PWD/Mido.sh" "$PWD/Mido.sh" --unshare-all --share-net -- ./Mido.sh --help`
+Still bugs? Wrap it in bubble wrap: `bwrap --ro-bind /bin /bin --ro-bind /usr/bin /usr/bin --ro-bind /lib /lib --ro-bind /usr/lib /usr/lib --ro-bind /lib64 /lib64 --ro-bind /usr/lib64 /usr/lib64 --ro-bind /etc /etc --dev-bind /dev/null /dev/null --bind "$PWD" "$PWD" --ro-bind "$PWD/Mido.sh" "$PWD/Mido.sh" --unshare-all --share-net -- ./Mido.sh --help`
 - This is the same sandbox used by Flatpak
+- Here, we have a fine-grained sandbox configuration tested to work on Debian and Fedora (likely others)
 - Compartmentalize further by running Mido in its own unprivileged user account or even it's own disposable VM on Qubes OS
 
 With sandbox/VM escape or privilege escalation bugs? GG, you win!!
@@ -103,4 +104,4 @@ With sandbox/VM escape or privilege escalation bugs? GG, you win!!
 
 ## License
 
-MIT License - Copyright (C) 2023 Elliot Killick <contact@elliotkillick.com>
+MIT License - Copyright (C) 2024 Elliot Killick <contact@elliotkillick.com>
