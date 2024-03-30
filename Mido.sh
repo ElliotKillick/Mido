@@ -161,6 +161,10 @@ parse_args() {
                 ;;
         esac
     done
+
+    if [ -z "$language" ]; then
+        language="English (United States)"
+    fi
 }
 
 handle_curl_error() {
@@ -360,7 +364,7 @@ consumer_download() {
     }
 
     # tr: Filter for only alphanumerics or "-" to prevent HTTP parameter injection
-    sku_id="$(echo "$language_skuid_table_html" | grep "English (United States)" | sed 's/&quot;//g' | cut -d ',' -f 1  | cut -d ':' -f 2 | tr -cd '[:alnum:]-' | head -c 16)"
+    sku_id="$(echo "$language_skuid_table_html" | grep "$language" | sed 's/&quot;//g' | cut -d ',' -f 1  | cut -d ':' -f 2 | tr -cd '[:alnum:]-' | head -c 16)"
     [ "$VERBOSE" ] && echo "SKU ID: $sku_id" >&2
 
     # Get ISO download link
@@ -423,13 +427,53 @@ enterprise_eval_download() {
         return $?
     }
 
+    case "$language" in
+        "English (Great Britain)")
+            CULTURE="en-gb"
+            COUNTRY="GB";;
+        "Chinese (Simplified)")
+            CULTURE="zh-cn"
+            COUNTRY="CN";;
+        "Chinese (Traditional)")
+            CULTURE="zh-tw"
+            COUNTRY="TW";;
+        "French")
+            CULTURE="fr-fr"
+            COUNTRY="FR";;
+        "German")
+            CULTURE="de-de"
+            COUNTRY="DE";;
+        "Italian")
+            CULTURE="it-it"
+            COUNTRY="IT";;
+        "Japanese")
+            CULTURE="ja-jp"
+            COUNTRY="JP";;
+        "Korean")
+            CULTURE="ko-kr"
+            COUNTRY="KR";;
+        "Portuguese (Brazil)")
+            CULTURE="pt-br"
+            COUNTRY="BR";;
+        "Spanish")
+            CULTURE="es-es"
+            COUNTRY="ES";;
+        "Russian")
+            CULTURE="ru-ru"
+            COUNTRY="RU";;
+        *)
+            CULTURE="en-us"
+            COUNTRY="US";;
+    esac
+
+
     if ! [ "$iso_download_page_html" ]; then
         # This should only happen if there's been some change to where this download page is located
         echo_err "Windows enterprise evaluation download page gave us an empty response"
         return 1
     fi
 
-    iso_download_links="$(echo "$iso_download_page_html" | grep -o "https://go.microsoft.com/fwlink/p/?LinkID=[0-9]\+&clcid=0x[0-9a-z]\+&culture=en-us&country=US")" || {
+    iso_download_links="$(echo "$iso_download_page_html" | grep -o "https://go.microsoft.com/fwlink/p/?LinkID=[0-9]\+&clcid=0x[0-9a-z]\+&culture=${CULTURE}&country=${COUNTRY}")" || {
         # This should only happen if there's been some change to the download endpoint web address
         echo_err "Windows enterprise evaluation download page gave us no download link"
         return 1
