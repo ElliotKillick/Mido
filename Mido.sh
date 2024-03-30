@@ -320,7 +320,10 @@ consumer_download() {
         8 | 10) url="${url}ISO" ;;
     esac
 
-    user_agent="Mozilla/5.0 (X11; Linux x86_64; rv:100.0) Gecko/20100101 Firefox/100.0"
+    # Determine approximate latest Firefox release, using Mozilla's 4 week release schedule & the midnight after the release of Firefox 124
+    firefox_release="$((124 + ($(date +%s) - 1710892800) / 2419200))"
+
+    user_agent="Mozilla/5.0 (X11; Linux x86_64; rv:${firefox_release}.0) Gecko/20100101 Firefox/${firefox_release}.0"
     # uuidgen: For MacOS (installed by default) and other systems (e.g. with no /proc) that don't have a kernel interface for generating random UUIDs
     session_id="$(cat /proc/sys/kernel/random/uuid 2> /dev/null || uuidgen --random)"
 
