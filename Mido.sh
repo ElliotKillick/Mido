@@ -241,8 +241,23 @@ scurl_file() {
 
     # --location: Microsoft likes to change which endpoint these downloads are stored on but is usually kind enough to add redirects
     # --fail: Return an error on server errors where the HTTP response code is 400 or greater
-    curl --progress-bar --location --output "$part_file" --continue-at - --max-filesize 10G --fail --proto =https "--tlsv$tls_version" --http1.1 -- "$url" || {
-        error_code=$?
+    curl --progress-bar --location --output "$part_file" --continue-at - --max-filesize 10G --fail --proto =https "--tlsv$tls_version" --http1.1 -- "$url"
+    error_code=$?
+
+    if [ "$error_code" -ne 0 ]; then
+        # Fallback to TLS 1.2 if TLS 1.3 is not supported (error code 4)
+        if [ "$error_code" -eq 4 ] && [ "$tls_version" = "1.3" ]; then
+            echo_info "TLS 1.3 not supported by curl, falling back to TLS 1.2..."
+            curl --progress-bar --location --output "$part_file" --continue-at - --max-filesize 10G --fail --proto =https --tlsv1.2 --http1.1 -- "$url"
+            error_code=$?
+            
+            if [ "$error_code" -eq 0 ]; then
+                # Success after fallback
+                mv "$part_file" "${out_file}${unverified_ext}"
+                return 0
+            fi
+        fi
+
         handle_curl_error "$error_code"
         error_action=$?
 
@@ -256,7 +271,7 @@ scurl_file() {
         fi
 
         return "$error_action"
-    }
+    fi
 
     # Full downloaded succeeded, ready for verification check
     mv "$part_file" "${out_file}${unverified_ext}"
