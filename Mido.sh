@@ -236,12 +236,19 @@ scurl_file() {
     out_file="$1"
     tls_version="$2"
     url="$3"
+    user_agent="$4"
+    referer="$5"
 
     part_file="${out_file}${part_ext}"
 
+    set -- --progress-bar --location --output "$part_file" --continue-at - --max-filesize 10G --fail --proto =https "--tlsv$tls_version" --http1.1
+    [ "$user_agent" ] && set -- "$@" --user-agent "$user_agent"
+    [ "$referer" ] && set -- "$@" --referer "$referer"
+    set -- "$@" -- "$url"
+
     # --location: Microsoft likes to change which endpoint these downloads are stored on but is usually kind enough to add redirects
     # --fail: Return an error on server errors where the HTTP response code is 400 or greater
-    curl --progress-bar --location --output "$part_file" --continue-at - --max-filesize 10G --fail --proto =https "--tlsv$tls_version" --http1.1 -- "$url" || {
+    curl "$@" || {
         error_code=$?
         handle_curl_error "$error_code"
         error_action=$?
@@ -405,7 +412,7 @@ consumer_download() {
     echo_ok "Got latest ISO download link (valid for 24 hours): $iso_download_link"
 
     # Download ISO
-    scurl_file "$out_file" "1.3" "$iso_download_link"
+    scurl_file "$out_file" "1.3" "$iso_download_link" "$user_agent" "$url"
 }
 
 enterprise_eval_download() {
