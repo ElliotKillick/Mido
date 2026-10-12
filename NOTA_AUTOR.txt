@@ -1,0 +1,81 @@
+eh, ah, hola, ¿que tal?
+
+pues bien, te resumo brevemente el temario, queria ver otro uso de la IA,
+ademas de ports a otros sistemas operativos como linux o ports de sistemas
+windows antiguos, tambien probarlo en reparaciones de scripts, esta reparaci
+on es del script mido, el original no funcionaban la mitad de los enlaces
+el de 7, el enlace de la wayback medio funcionaba, entre otros, o sea, que
+no servia, con la IA se ha logrado restaurar el script (aunque hare una
+comprobacion final de que todo funcione), he querido centrarme principalmente
+en los sistemas desde 3.11 y sus equivalencias en server (aunque podrian ha
+ber cambios de ultima hora), ademas de los enlaces, algunos fallos que ha
+detectado la IA, han sido reparados y la mitad de las verificaciones ha ido
+bien.
+
+ahora bien, todo no va a ser como aquel personaje de terminator 2 que dijo
+"no problemo", siii, ese, el T-800 caray, estos tutoriales que se haran pro
+ximamente no van a ser IA, estos son:
+
+- tutorial de instalacion de vmware (win-lin)
+-  tutorial de instalacion de virtualbox (win-lin)
+-  tutorial de instalacion de PCEM
+- tutorial de instalacion de 86box
+-  tutorial de instalacion de dosbox-x
+
+ATENCION, AVISO (12 de octubre de 2026): microsoft cortara el acceso a partir
+del 19 de junio del 2027 el acceso a windows update a todos los equipos que
+tengan windows 10 sin ESU hacia abajo (el bloqueo anterior fue hasta windows
+vista-server 2008 sin R2), esto logicamente afecta a las versiones de servidor
+(server 2008 R2 hasta server 2019, a partir de server 2022, no afecta el cierre
+de windows update), esto es debido a la caducidad de los certificados raiz
+del servicio de actualizaciones que caduca a partir de esta fecha, si quieres
+echar un vistazo al link oficial de la noticia de microsoft, aqui te lo paso (usa la traduccion del navegador, esta en ingles):
+
+https://techcommunity.microsoft.com/blog/windows-itpro-blog/prepare-for-windows-update-certificate-rotation-in-2027/4562463
+
+recuerda que los certificados raiz forman parte de la navegacion por internet, una de las caracteristicas del protocolo https
+es que ahora todo lo que se transfiere al router esta cifrado (anteriormente no era asi), pero para que programas que se uti
+lizan para analizar todo lo que se transfiere en una red domestica como wireshark no surta ningun efecto (no se vea ningun
+dato sensible), los certificados raiz deben de funcionar y estar al dia, si no funciona, da error de certificado en el navegador
+y los programas que conectan a internet dejaran de funcionar, esto lo tienes que tener en cuenta a la hora de utilizar un windows
+antiguo instalado en el ordenador (por cierto, el cierre de windows update tambien afecta a las maquinas virtuales, o sea, a los PCs
+arrancados dentro de un equipo fisico).
+
+cuando llegue la fecha de caducidad del certificado raiz es posible que en los offices instalados en windows sin soporte den errores
+de comprobacion de actualizaciones (hasta 10 y server 2019 que son cliente y servidor respectivamente se puede instalar el 2021-365
+7 y 8, hasta office 2016), solucionandose esto desactivando las actualizaciones de office (cuando llegue la fecha de caducidad de
+dichos certificados raiz).
+
+en la ventana anterior (las actualizaciones automaticas se impusieron a partir de windows 2000) no dio ningun tipo de fallo a la
+hora de arrancar el sistema operativo, unicamente a la hora de abrir la pagina de microsoft update o iniciar el windows update.
+(pase la experiencia de la ventana anterior de cierre del update).
+
+en el caso de que sea windows 10 con ESU, windows 11 24H2, servers LTSC de 2019 y 2016 y server 2022, microsoft ha puesto como
+metodo oficial para solucionar el problema, la actualizacion, o sea, que tendras que actualizar el segundo martes de cada mes
+hasta la fecha del 19 de junio de 2027 en el cual ya...piano, piano (entenderas lo que te digo).
+
+en el caso de que te encuentres con este tipo de equipos, estos son los caminos que tienes:
+
+-  comprar el ESU (windows 10) (en el caso de paises de la union europea, no tiene ningun coste) 
+-  parchear el update para acceder al ESU, que el unico parche (y recomendable para windows 10) es el MAS (microsoft activation script)
+-  instalar un parche no oficial para actualizar los certificados raiz, que es el legacy update
+-  en el caso de versiones compatibles (no es obligatorio por el momento a partir de 11 24H2, windows 10 sin ESU es imprescindible
+a medias) aceptar las actualizaciones a versiones mayores de windows via update o haciendo una actualizacion desde los medios de
+instalacion de windows.
+-  mantener la instalacion de windows y hacer un dual boot con linux (no aconsejable).
+-  desinstalar windows e instalar linux junto con una maquina virtual de windows (ahi se permite todo, desde originales hasta modificados)
+
+en el caso de que elijas la opcion sensata (la ultima), recuerda que debes de montar vmware o virtualbox en linux (instala linux en el ordenador
+logicamente) y la maquina virtual con el windows a elegir (que ahi si puedes instalar windows antiguos) de manera oficial hasta junio de 2027, posteriormente
+no va a funcionar y solo vas a poder instalar y actualizar este tipo de PCs por metodos no oficiales.
+
+en el caso de que hayas perdido tu empleo o el curso al haberle dicho este inconveniente, mucha suerte en tu busqueda de empleo o en la busqueda de curso
+(que espero que lo encuentres), con todas estas pistas que te digo ya veras como seguro al final encuentras el empleo o curso soñado.
+
+ok, disfruta de esta restauracion completa de mido, dime que tal funciona
+el script, si ves algun fallo dimelo y tambien dimelo si haces alguna
+maquina virtual de windows o reinstalas el mismo.
+
+SALU2
+
+BENDER
